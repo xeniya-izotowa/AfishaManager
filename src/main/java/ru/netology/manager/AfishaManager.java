@@ -2,11 +2,12 @@ package ru.netology.manager;
 
 import lombok.Data;
 import ru.netology.domain.Movie;
+import ru.netology.repository.MovieRepository;
 
 @Data
 
 public class AfishaManager {
-
+    private MovieRepository repository;
     private int limit = 10;
     private Movie[] movies = new Movie[0];
 
@@ -14,32 +15,28 @@ public class AfishaManager {
 
     }
 
+    public AfishaManager(MovieRepository repository) {
+        this.repository = repository;
+    }
     public  AfishaManager(int limit) {
         this.limit = limit;
     }
 
     public void addMovie(Movie movie) {
-        int length = movies.length + 1;
-        Movie[] tmp = new Movie[length];
-        System.arraycopy(movies, 0, tmp, 0, movies.length);
-
-        int lastIndex = tmp.length - 1;
-        tmp[lastIndex] = movie;
-        movies = tmp;
+        repository.save(movie);
     }
 
    public Movie[] showLastMovies(int limit) {
-        int resultLength;
-        if (movies.length > limit) {
-            resultLength = limit;
-        } else {
-            resultLength = movies.length;
+        Movie[] films = new Movie[limit];
+        Movie[] tmp = repository.findAll();
+        for (int i = 0; i < films.length; i++) {
+            int index = tmp.length - i - 1;
+            films[i] = tmp[index];
         }
-       Movie[] lastAdded = new Movie[resultLength];
-        for (int i = 0; i < lastAdded.length; i++) {
-            int index = movies.length - i - 1;
-            lastAdded[i] = movies[index];
-        }
-        return lastAdded;
+        return films;
+   }
+
+   public Movie[] getAll() {
+        return repository.findAll();
    }
 }

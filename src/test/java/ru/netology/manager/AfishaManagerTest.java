@@ -1,62 +1,62 @@
 package ru.netology.manager;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.netology.domain.Movie;
+import ru.netology.repository.MovieRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AfishaManagerTest {
+@ExtendWith(MockitoExtension.class)
+
+public class AfishaManagerTest {
+    @Mock
+    private MovieRepository repository;
+    @InjectMocks
+    private AfishaManager manager;
+
+    Movie one = new Movie(1, "Bloodshot", "action", false);
+    private Movie two = new Movie(2, "Onward", "cartoon", false);
+    private Movie three = new Movie(3, "Hotel Belgrad", "comedy", false);
+    private Movie four = new Movie(4, "Gentlemen", "action", false);
+    private Movie five = new Movie(5, "The Invisible Man", "Horror", false);
+    private Movie six = new Movie(6, "Trolls. World Tour", "cartoon", false);
+    private Movie seven = new Movie(7, "Number One", "comedy", false);
+    private Movie eight = new Movie(8, "Harry Potter", "adventures", false);
+    private Movie nine = new Movie(9, "Titanic", "drama", false);
+    private Movie ten = new Movie(10, "Kill Bill", "action", false);
+    private Movie eleven = new Movie(11, "Candyman", "horror", true);
 
     @Test
     void shouldAddMovie() {
-        AfishaManager manager = new AfishaManager();
-        Movie first = new Movie(1, "Bloodshot", "action", false);
-        Movie second = new Movie(2, "Onward", "cartoon", false);
+        Movie[] returned = new Movie[]{five};
+        doReturn(returned).when(repository).findAll();
+        doNothing().when(repository).save(five);
 
-        manager.addMovie(first);
-        manager.addMovie(second);
+        manager.addMovie(five);
 
-        Movie[] expected = new Movie[]{second, first};
-        Movie[] actual = manager.showLastMovies(manager.getLimit());
+        Movie[] expected = new Movie[]{five};
+        Movie[] actual = manager.getAll();
 
         assertArrayEquals(expected, actual);
+
+        verify(repository).save(five);
     }
 
     @Test
-    void shouldShowLastMoviesLess10() {
-        AfishaManager manager = new AfishaManager(5);
-        Movie one = new Movie(1, "Bloodshot", "action", false);
-        Movie two = new Movie(2, "Onward", "cartoon", false);
-        Movie three = new Movie(3, "Hotel Belgrad", "comedy", false);
-        Movie four = new Movie(4, "Gentlemen", "action", false);
-        Movie five = new Movie(5, "The Invisible Man", "Horror", false);
-        Movie six = new Movie(6, "Trolls. World Tour", "cartoon", false);
-        Movie seven = new Movie(7, "Number One", "comedy", false);
-        Movie eight = new Movie(8, "Harry Potter", "adventures", false);
-        Movie nine = new Movie(9, "Titanic", "drama", false);
-        Movie ten = new Movie(10, "Kill Bill", "action", false);
-        Movie eleven = new Movie(11, "Candyman", "horror", true);
+    void shouldShowLastAdded() {
+        Movie[] returned = new Movie[]{eleven, five, one, two, six};
+        doReturn(returned).when(repository).findAll();
 
-        manager.addMovie(one);
-        manager.addMovie(two);;
-        manager.addMovie(three);
-        manager.addMovie(four);
-        manager.addMovie(five);
-        manager.addMovie(six);
-        manager.addMovie(seven);
-        manager.addMovie(eight);
-        manager.addMovie(nine);
-        manager.addMovie(ten);
-        manager.addMovie(eleven);
+        Movie[] expected = new Movie[]{six, two, one, five, eleven};
+        Movie[] actual = manager.showLastMovies(5);
 
-        manager.showLastMovies(manager.getLimit());
+        assertArrayEquals(expected, actual);
 
-        Movie[] expected = new Movie[]{eleven, ten, nine, eight, seven};
-        //Movie[] actual =
-
-        //assertArrayEquals(expected, actual);
-
+        verify(repository).findAll();
     }
-
-
-    }
+}
