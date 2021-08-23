@@ -49,12 +49,10 @@ class AfishaManagerTest {
         manager.addMovie(ten);
         manager.addMovie(eleven);
 
-        manager.showLastMovies(manager.getLimit());
-
+        Movie[] actual = manager.showLastMovies(manager.getLimit());
         Movie[] expected = new Movie[]{eleven, ten, nine, eight, seven};
-        //Movie[] actual =
 
-        //assertArrayEquals(expected, actual);
+        assertArrayEquals(expected, actual);
 
     }
 
